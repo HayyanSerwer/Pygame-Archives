@@ -1,0 +1,6 @@
+[c1 - https://stackoverflow.com/questions/7974849/how-can-i-make-one-python-file-run-another]
+[c2 - https://raspberrypi.stackexchange.com/questions/15613/stop-program-after-a-period-of-time]
+used for menu (menu.py): https://www.geeksforgeeks.org/creating-start-menu-in-pygame/
+used for drawing shapes: https://sites.cs.ucsb.edu/~pconrad/cs5nm/topics/pygame/drawing/
+exit commands: https://www.geeksforgeeks.org/python-exit-commands-quit-exit-sys-exit-and-os-_exit/
+c3 https://stackoverflow.com/questions/10990137/pygame-mouse-clicking-detection

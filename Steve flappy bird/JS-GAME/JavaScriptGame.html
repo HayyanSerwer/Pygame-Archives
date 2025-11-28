@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JavaScript Žaidimas</title>
+	<link rel="stylesheet" href="JavaScriptGame.css">
+</head>
+
+<body onload="zaidimas()">
+	<div class="container">
+        <div style="text-align:center;width:480px;">
+            <button onmousedown="aukstyn()" onmouseup="judek()"> up </button><br><br>
+            <button onmousedown="kairen()" onmouseup="judek()"> left </button>
+            <button onmousedown="desinen()" onmouseup="judek()"> right </button><br><br>
+            <button onmousedown="apacia()" onmouseup="judek()"> down </button>
+            <br><br>
+            <button type="submit" onClick="refreshPage()">restart</button>
+        </div>
+    </div>
+	<script>
+		var figura;
+		var kliutys = [];
+		var taskai;
+		var fonas;
+        var mySound;
+        var myMusic;
+        
+        
+		function zaidimas() {
+			ekranas.start();
+			fonas = new veikejas(450, 250, '2021-05-22_21.34.43.png', 0, 0, 'image');
+			figura = new veikejas(40, 35, 'steve.png', 50, 100, 'image');
+			taskai = new veikejas('16px', 'fantasy', 'white', 200, 25, 'text');
+            mySound = new sound("death.mp3");
+            myMusic = new sound("Sweden.mp3");
+            myMusic.play();
+		};
+        
+        
+        
+		var ekranas = {
+			canvas: document.createElement("canvas"),
+			start: function() {
+				this.canvas.width = 450;
+				this.canvas.height = 250;
+				this.context = this.canvas.getContext("2d");
+				document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+				this.frameNo = 0; // 2
+				this.interval = setInterval(ekranoAtnaujinimas, 50);
+			},
+			clear: function() {
+				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			},
+			stop: function() {
+				clearInterval(this.interval);
+			} //6
+		}
+
+		function veikejas(width, height, color, x, y, type) {
+			this.type = type;
+			if(type == 'image'){
+				this.image = new Image();
+				this.image.src = color;
+			}
+			this.width = width;
+			this.height = height;
+			this.speedX = 0;
+			this.speedY = 0;
+			this.x = x;
+			this.y = y;
+			this.update = function() {
+				ctx = ekranas.context;
+				if (this.type == 'text') {
+					ctx.font = this.width + '' + this.height;
+					ctx.fillStyle = color;
+					ctx.fillText(this.text, this.x, this.y);
+				}
+				if(type == 'image'){
+					ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+				}
+				else {
+					ctx.fillStyle = color;
+					ctx.fillRect(this.x, this.y, this.width, this.height);
+				}
+
+			}
+            
+			this.pozicija = function() {
+				this.x += this.speedX;
+				this.y += this.speedY;
+			}
+
+
+			this.sustojimas = function(objektas) {
+				var kaire = this.x;
+				var desine = this.x + (this.width);
+				var virsus = this.y;
+				var apacia = this.y + (this.height);
+				var kaire2 = objektas.x;
+				var desine2 = objektas.x + (objektas.width);
+				var virsus2 = objektas.y;
+				var apacia2 = objektas.y + (objektas.height);
+				var sustojimas = true;
+				if ((apacia < virsus2) || (virsus > apacia2) || (desine < kaire2) || (kaire > desine2)) {
+					sustojimas = false;
+				}
+				return sustojimas;
+			}
+		} //5
+
+		function ekranoAtnaujinimas() {
+			var x, aukstis, erdve, mazasAukstis, didelisAukstis, mazaErdve, DideleErdve;
+			for (i = 0; i < kliutys.length; i += 1) {
+				if (figura.sustojimas(kliutys[i])) {
+                    mySound.play();
+                    myMusic.stop();
+					ekranas.stop();
+					return;
+				}
+			}
+			
+			ekranas.clear();
+			fonas.pozicija();
+			fonas.update();
+			ekranas.frameNo += 1;
+			if (ekranas.frameNo == 1 || everyinterval(100)) {
+				x = ekranas.canvas.width;
+				mazasAukstis = 20;
+				didelisAukstis = 120;
+				aukstis = Math.floor(Math.random() * (didelisAukstis - mazasAukstis + 1) + mazasAukstis);
+				mazaErdve = 40;
+				DideleErdve = 160;
+				erdve = Math.floor(Math.random() * (DideleErdve - mazaErdve + 1) + mazaErdve);
+				kliutys.push(new veikejas(10, aukstis, 'darkblue', x, 0));
+				kliutys.push(new veikejas(10, x - aukstis - erdve, 'darkblue', x, aukstis + erdve));
+			}
+			for (i = 0; i < kliutys.length; i += 1) {
+				kliutys[i].x += -1;
+				kliutys[i].update();
+			}
+			taskai.text = 'Kliūties įveikimo taškai - ' + ekranas.frameNo;
+			taskai.update();
+			figura.pozicija();
+			figura.update();
+		}
+        
+        function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
+
+
+
+        
+		function everyinterval(n) {
+			if ((ekranas.frameNo / n) % 1 == 0) {
+				return true;
+			}
+			return false;
+		} //3
+
+		function judek() {
+			figura.speedX = 0;
+			figura.speedY = 0;
+		}
+
+
+		function aukstyn() {
+			figura.speedY -= 2;
+		}
+
+		function kairen() {
+			figura.speedX -= 2;
+		}
+
+		function desinen() {
+			figura.speedX += 2;
+		}
+
+		function apacia() {
+			figura.speedY += 2;
+		}
+
+        function refreshPage(){
+            window.location.reload();
+}
+	</script>
+</body></html>

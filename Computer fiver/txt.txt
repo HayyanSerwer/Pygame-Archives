@@ -1,0 +1,9 @@
+what to work on
+
+2. unify variables for both games
+3. get return button for rtt
+4. store game data (score)
+
+6. rtt make text appear on screen
+7. comment code for documentation
+8. sort menu buttons
